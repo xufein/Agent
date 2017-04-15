@@ -2,7 +2,6 @@ package task_1;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
@@ -16,20 +15,18 @@ public class DiscoveryClient extends Thread {
 
 	public DiscoveryClient(InetAddress mcastAddr, int basePort) throws IOException {
 		clientSocket = new MulticastSocket(basePort);
-		// clientSocket.joinGroup(mcastAddr);
 		discover(clientSocket, basePort);
-		this.start();
+		this.start(); // listener
 	}
 
 	public void discover(MulticastSocket mcastSocket, int basePort) throws IOException {
-		byte[] sendData = new byte[1024];
 		// send
+		byte[] sendData = new byte[1024];
 		String data = "Request from client";
 		sendData = data.getBytes();
 		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName(group),
 				basePort);
-//		while(true)
-			clientSocket.send(sendPacket);
+		clientSocket.send(sendPacket);
 	}
 
 	public void run() {

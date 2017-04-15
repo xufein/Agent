@@ -2,17 +2,14 @@ package task_1;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 
 public class DiscoveryServer extends Thread {
 
 	public static String group = "239.0.0.1";
 	public static int basePort = 1234;
-	public static int serverPort = 4444;
+	public static int serverPort = 4444; // change this while multiple server 
 	public static MulticastSocket receiveSocket;
 	public static MulticastSocket replySocket;
 

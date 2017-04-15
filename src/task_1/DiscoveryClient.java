@@ -12,15 +12,16 @@ public class DiscoveryClient extends Thread {
 	public static String group = "239.0.0.1";
 	public static int basePort = 1234;
 	public static MulticastSocket clientSocket;
+	public static Vector vector = new Vector();;
 
 	public DiscoveryClient(InetAddress mcastAddr, int basePort) throws IOException {
 		clientSocket = new MulticastSocket(basePort);
 		discover(clientSocket, basePort);
-		this.start(); // listener
+		this.start(); // start listener
 	}
 
 	public void discover(MulticastSocket mcastSocket, int basePort) throws IOException {
-		// send
+		// send request
 		byte[] sendData = new byte[1024];
 		String data = "Request from client";
 		sendData = data.getBytes();
@@ -38,15 +39,19 @@ public class DiscoveryClient extends Thread {
 				String serverReply = new String(responsePacket.getData());
 				System.out.println("Server response: " + serverReply);
 				System.out.println(responsePacket.getAddress() + ":" + responsePacket.getPort());
+				// add to Vector
+				String serverAddress = responsePacket.getAddress().toString();
+				String serverIP = Integer.toString(responsePacket.getPort());
+				vector.addElement(new String(serverAddress + ":" + serverIP));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-	// public Vector getDiscoveryResult() {
-	// return null;
-	// }
+	public Vector getDiscoveryResult() {
+		return vector;
+	}
 
 	public static void main(String[] args) throws UnknownHostException, IOException {
 		new DiscoveryClient(InetAddress.getByName(group), basePort);

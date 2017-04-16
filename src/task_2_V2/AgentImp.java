@@ -1,4 +1,4 @@
-package task_2;
+package task_2_V2;
 
 import java.io.Serializable;
 import java.net.InetAddress;

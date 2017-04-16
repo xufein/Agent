@@ -1,4 +1,4 @@
-package task_2;
+package task_2_V2;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -21,21 +21,20 @@ public class Server {
 			Agent agent = (Agent) inputStream.readObject();
 			System.out.print("Id: " + agent.showId() + ", Name: " + agent.showName());
 			System.out.println(", From: " + agent.showIP());
-			// send back
+			// clean
+			inputStream.close();
+			serversocket.close();
+
+			// update and send back
 			agent.setId(456);
 			agent.setName("Bob");
 			agent.setTask("HELLO WORLD");
-			outputSteam = new ObjectOutputStream(serversocket.getOutputStream());
+			Socket clientSocket = new Socket(agent.showIP(), agent.showPort());
+			outputSteam = new ObjectOutputStream(clientSocket.getOutputStream());
 			outputSteam.writeObject(agent);
 			// clean
-			inputStream.close();
 			outputSteam.close();
-			serversocket.close();
-
-//			Socket clientSocket = new Socket("localhost", 1234);
-//			outputSteam = new ObjectOutputStream(clientSocket.getOutputStream());
-//			outputSteam.writeObject(agent);
-
+			clientSocket.close();
 		}
 	}
 

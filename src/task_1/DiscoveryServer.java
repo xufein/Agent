@@ -9,7 +9,7 @@ public class DiscoveryServer extends Thread {
 
 	public static String group = "239.0.0.1";
 	public static int basePort = 1234;
-	public static int serverPort = 4444; // change this while multiple server 
+	public static int serverPort = 4444; // change this while multiple server
 	public static MulticastSocket receiveSocket;
 	public static MulticastSocket replySocket;
 

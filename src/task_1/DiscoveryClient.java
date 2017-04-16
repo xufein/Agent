@@ -12,7 +12,7 @@ public class DiscoveryClient extends Thread {
 	public static String group = "239.0.0.1";
 	public static int basePort = 1234;
 	public static MulticastSocket clientSocket;
-	public static Vector vector = new Vector();;
+	public static Vector vector = new Vector();
 
 	public DiscoveryClient(InetAddress mcastAddr, int basePort) throws IOException {
 		clientSocket = new MulticastSocket(basePort);

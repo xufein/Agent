@@ -3,19 +3,22 @@ package task_1;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 import java.util.Vector;
 
 public class DiscoveryClient extends Thread {
 
-	public static String group = "239.0.0.1";
+	public static String group = "255.255.255.255";
 	public static int basePort = 1234;
 	public static MulticastSocket clientSocket;
 	public static Vector vector = new Vector();
+	public static InetSocketAddress address = new InetSocketAddress("192.168.1.86", 1234);
 
 	public DiscoveryClient(InetAddress mcastAddr, int basePort) throws IOException {
-		clientSocket = new MulticastSocket(basePort);
+//		clientSocket = new MulticastSocket(basePort);
+		clientSocket = new MulticastSocket(address);
 		discover(clientSocket, basePort);
 		this.start(); // start listener
 	}

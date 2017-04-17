@@ -14,10 +14,10 @@ public class DiscoveryClient extends Thread {
 	public static int basePort = 1234;
 	public static MulticastSocket clientSocket;
 	public static Vector vector = new Vector();
-	public static InetSocketAddress address = new InetSocketAddress("192.168.1.86", 1234);
+	public static InetSocketAddress address = new InetSocketAddress("192.168.1.86", 1234); // wlan
 
 	public DiscoveryClient(InetAddress mcastAddr, int basePort) throws IOException {
-//		clientSocket = new MulticastSocket(basePort);
+		// clientSocket = new MulticastSocket(basePort);
 		clientSocket = new MulticastSocket(address);
 		discover(clientSocket, basePort);
 		this.start(); // start listener

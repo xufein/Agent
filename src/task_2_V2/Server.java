@@ -12,7 +12,7 @@ public class Server {
 		Socket serversocket = null;
 		ObjectInputStream inputStream = null;
 		ObjectOutputStream outputSteam = null;
-		ServerSocket server = new ServerSocket(4444);
+		ServerSocket server = new ServerSocket(4444); // server port
 
 		while (true) {
 			// receive

@@ -20,7 +20,7 @@ public class Server {
 			inputStream = new ObjectInputStream(serversocket.getInputStream());
 			Agent agent = (Agent) inputStream.readObject();
 			System.out.print("Id: " + agent.showId() + ", Name: " + agent.showName());
-			System.out.println(", From: " + agent.showIP());
+			System.out.println(", From: " + agent.showIP() + ":" + agent.showPort());
 			// clean
 			inputStream.close();
 			serversocket.close();

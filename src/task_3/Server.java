@@ -18,16 +18,17 @@ public class Server {
 	static int basePort = 1234;
 	static int serverPort = 4444;
 
-	public static Vector<String> vector = new Vector();
+	static Vector<String> vector = new Vector();
 	static Scanner scanner = new Scanner(System.in);
 
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
-		// cmd();
+		cmd();
 		listener();
 		discover();
 		agentArrive();
 	}
 
+	// broadcast to find server
 	public static void discover() throws IOException {
 		InetSocketAddress address = new InetSocketAddress(localIP, basePort);
 		MulticastSocket discoverSocket = new MulticastSocket(address);
@@ -37,6 +38,7 @@ public class Server {
 		discoverSocket.send(discoverPacket);
 	}
 
+	// broadcast listener
 	public static void listener() throws IOException {
 		new Thread(new Runnable() {
 			public void run() {
@@ -48,17 +50,19 @@ public class Server {
 						byte[] listenerData = new byte[1024];
 						DatagramPacket listenerPacket = new DatagramPacket(listenerData, listenerData.length);
 						listenerSocket.receive(listenerPacket);
-						System.out.println(
-								"Receive request from: " + listenerPacket.getAddress() + ":" + listenerPacket.getPort());
-						// TODO: filter duplicated address
-						vector.addElement(new String(listenerPacket.getAddress() + ":" + listenerPacket.getPort()));
+						// show packet source
+						String source = new String(listenerPacket.getAddress() + ":" + listenerPacket.getPort());
+						System.out.println("Receive request from: " + source);
+						// save to vector
+						if (vector.contains(source) != true)
+							vector.addElement(source);
+						// TODO; push vector to Client ...push(vector) {}
 						// reply
 						MulticastSocket replySocket = new MulticastSocket(serverPort);
 						byte[] replyData = { 'R', 'E', 'P', 'L', 'Y' };
 						DatagramPacket replyPacket = new DatagramPacket(replyData, replyData.length,
 								listenerPacket.getAddress(), basePort);
 						replySocket.send(replyPacket);
-						//
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -67,15 +71,24 @@ public class Server {
 		}).start();
 	}
 
+	// server wait for agent arrive
 	public static void agentArrive() throws IOException, ClassNotFoundException {
 		ServerSocket serversocket = new ServerSocket(serverPort);
-		Socket agentSocket = serversocket.accept();
-		ObjectInputStream inputStream = new ObjectInputStream(agentSocket.getInputStream());
-		Agent agent = (Agent) inputStream.readObject();
-		System.out.print("Receive Agent ");
-		System.out.print("Id: " + agent.showId() + ", Name: " + agent.showName());
-		System.out.println(", From: " + agent.showIP() + ":" + agent.showPort());
-		System.out.println("Task: " + agent.showTask());
+		while (true) {
+			Socket agentSocket = serversocket.accept();
+			ObjectInputStream inputStream = new ObjectInputStream(agentSocket.getInputStream());
+			Agent agent = (Agent) inputStream.readObject();
+			System.out.print("Receive Agent ");
+			System.out.print("Id: " + agent.showId() + ", Name: " + agent.showName());
+			System.out.println(", From: " + agent.showIP() + ":" + agent.showPort());
+			System.out.println("Task: " + agent.showTask());
+			agent.setTask(agent.showTask() + "HELLO");
+			System.out.println("New Task: " + agent.showTask());
+		}
+	}
+
+	public static void agentForward(String server, int port) {
+
 	}
 
 	public static void cmd() {

@@ -1,6 +1,8 @@
 package task_3;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AgentImp implements Agent, Serializable {
 
@@ -9,6 +11,7 @@ public class AgentImp implements Agent, Serializable {
 	String homeIP;
 	int homePort;
 	String task = "";
+	List<String> visited = new ArrayList<String>();
 
 	public AgentImp(int id, String name, String homeIP, int homePort) {
 		this.id = id;
@@ -43,8 +46,18 @@ public class AgentImp implements Agent, Serializable {
 	}
 
 	@Override
+	public List<String> showVisited() {
+		return visited;
+	}
+
+	@Override
 	public void setTask(String task) {
 		this.task = task;
+	}
+
+	@Override
+	public void setVisited(String visited) {
+		this.visited.add(visited);
 	}
 
 }

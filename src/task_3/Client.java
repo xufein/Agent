@@ -11,18 +11,19 @@ import java.util.Vector;
 
 public class Client {
 
-	static String serverIP = "192.168.1.66";
+	// static String serverIP = "192.168.1.66";
 	static int serverPort = 4444;
-	static String homeIP = "192.168.1.66"; // set local IP
+	static String homeIP = "192.168.1.93"; // set local IP
 	static int homePort = 1234;
 
+	static Vector<String> vector = new Vector(); // save found server in vector
 	static Scanner scanner = new Scanner(System.in);
 
 	public static void main(String[] args) throws UnknownHostException, IOException {
 		cmd();
 		agentHome();
 		// agentSend();
-		agentSend("7", "Courier", "192.168.1.66", "4444"); // test
+		agentSend("7", "Courier", "192.168.1.93", "4444"); // test
 
 	}
 
@@ -39,6 +40,7 @@ public class Client {
 	public static void agentSend(String id, String name, String serverIP, String serverPort)
 			throws UnknownHostException, IOException {
 		Agent agent = new AgentImp(Integer.parseInt(id), name, homeIP, homePort); // home
+		agent.setVisited(homeIP + ":" + homePort);
 		Socket clientSocket = new Socket(serverIP, Integer.parseInt(serverPort)); // server
 		ObjectOutputStream sendAgent = new ObjectOutputStream(clientSocket.getOutputStream());
 		sendAgent.writeObject(agent);
@@ -57,9 +59,9 @@ public class Client {
 						ObjectInputStream inputStream = new ObjectInputStream(agentSocket.getInputStream());
 						Agent new_agent = (Agent) inputStream.readObject();
 						System.out.println("Agent back to home");
-						System.out.print("Id: " + new_agent.showId() + ", Name: " + new_agent.showName());
-						System.out.println(", From: " + new_agent.showIP() + ":" + new_agent.showPort());
+						System.out.println("Id: " + new_agent.showId() + ", Name: " + new_agent.showName());
 						System.out.println("Task: " + new_agent.showTask());
+						System.out.println("Visited: " + new_agent.showVisited());
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -92,7 +94,7 @@ public class Client {
 						}
 						break;
 					case "vector":
-						System.out.println(Server.vector);
+						System.out.println(Server.getVector());
 						break;
 					case "discover":
 						try {

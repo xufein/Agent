@@ -14,13 +14,14 @@ import java.util.Vector;
 
 public class Server {
 
-	static String localIP = "192.168.1.66"; // set local IP
+	static String localIP = "192.168.1.93"; // set local IP
 	static String group = "239.0.0.1";
 	static int basePort = 1234;
 	static int serverPort = 4444;
+	static String localTask = "HELLO "; // agent carry this message when arrive
 
 	static Agent agent;
-	static Vector<String> vector = new Vector();
+	static Vector<String> vector = new Vector(); // save found server in vector
 	static Scanner scanner = new Scanner(System.in);
 
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -66,7 +67,7 @@ public class Server {
 						byte[] replyData = { 'R', 'E', 'P', 'L', 'Y' };
 						DatagramPacket replyPacket = new DatagramPacket(replyData, replyData.length,
 								listenerPacket.getAddress(), basePort);
-						System.out.println("Send reply to " + listenerPacket.getAddress());
+						System.out.println("Send reply to " + listenerPacket.getAddress() + ":" + basePort + "\n");
 						replySocket.send(replyPacket);
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -86,13 +87,15 @@ public class Server {
 			agent = (Agent) inputStream.readObject();
 			System.out.print("Receive Agent ");
 			System.out.print("Id: " + agent.showId() + ", Name: " + agent.showName());
-			System.out.println(", From: " + agent.showIP() + ":" + agent.showPort());
+			System.out.println(", Home: " + agent.showIP() + ":" + agent.showPort());
+			// System.out.println(", From: " + agentSocket.getInetAddress());
+			// show visited and set new visited
+			System.out.println("Visited: " + agent.showVisited());
+			agent.setVisited(localIP + ":" + serverPort);
+			// show task and set new task
 			System.out.println("Task: " + agent.showTask());
-			agent.setTask(agent.showTask() + "HELLO"); // TODO: for different
-														// server
-			System.out.println("New Task: " + agent.showTask());
-			// agentForward("192.168.1.66", "1234");
-			// TODO: add step
+			agent.setTask(agent.showTask() + localTask); // TODO: different
+			System.out.println("New Task: " + agent.showTask() + "\n");
 		}
 	}
 
@@ -101,6 +104,10 @@ public class Server {
 		Socket clientSocket = new Socket(server, Integer.parseInt(port)); // destination
 		ObjectOutputStream sendAgent = new ObjectOutputStream(clientSocket.getOutputStream());
 		sendAgent.writeObject(agent);
+	}
+
+	public static Vector getVector() {
+		return vector;
 	}
 
 	public static void cmd() {
@@ -126,6 +133,7 @@ public class Server {
 						break;
 					case "vector":
 						System.out.println(vector);
+						// System.out.println(getVector());
 						break;
 					case "discover":
 						try {

@@ -22,7 +22,7 @@ public class Client {
 		cmd();
 		agentHome();
 		// agentSend();
-		// agentSend(007, "Courier", "192.168.1.66", 4444);
+		agentSend("7", "Courier", "192.168.1.66", "4444"); // test
 
 	}
 

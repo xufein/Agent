@@ -2,6 +2,7 @@ package task_3;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -18,6 +19,7 @@ public class Server {
 	static int basePort = 1234;
 	static int serverPort = 4444;
 
+	static Agent agent;
 	static Vector<String> vector = new Vector();
 	static Scanner scanner = new Scanner(System.in);
 
@@ -77,18 +79,24 @@ public class Server {
 		while (true) {
 			Socket agentSocket = serversocket.accept();
 			ObjectInputStream inputStream = new ObjectInputStream(agentSocket.getInputStream());
-			Agent agent = (Agent) inputStream.readObject();
+			// Agent agent = (Agent) inputStream.readObject();
+			agent = (Agent) inputStream.readObject();
 			System.out.print("Receive Agent ");
 			System.out.print("Id: " + agent.showId() + ", Name: " + agent.showName());
 			System.out.println(", From: " + agent.showIP() + ":" + agent.showPort());
 			System.out.println("Task: " + agent.showTask());
-			agent.setTask(agent.showTask() + "HELLO");
+			agent.setTask(agent.showTask() + "HELLO"); //TODO: for different server
 			System.out.println("New Task: " + agent.showTask());
+			// agentForward("192.168.1.66", "1234");
+			// TODO: add step
 		}
 	}
 
-	public static void agentForward(String server, int port) {
-
+	// forward agent
+	public static void agentForward(String server, String port) throws IOException {
+		Socket clientSocket = new Socket(server, Integer.parseInt(port)); // destination
+		ObjectOutputStream sendAgent = new ObjectOutputStream(clientSocket.getOutputStream());
+		sendAgent.writeObject(agent);
 	}
 
 	public static void cmd() {
@@ -100,6 +108,17 @@ public class Server {
 					case "list":
 						System.out.println("'discover' to boardcast.");
 						System.out.println("'vector' to show server.");
+						System.out.println("'forward' to forward agent.");
+						break;
+					case "forward":
+						System.out.println("Input 'destinationIP destinationPort'");
+						String info = scanner.nextLine();
+						String[] strArr = info.split(" ");
+						try {
+							agentForward(strArr[0], strArr[1]);
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
 						break;
 					case "vector":
 						System.out.println(vector);

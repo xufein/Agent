@@ -38,6 +38,7 @@ public class Server {
 		DatagramPacket discoverPacket = new DatagramPacket(discoverData, discoverData.length,
 				InetAddress.getByName("255.255.255.255"), basePort);
 		discoverSocket.send(discoverPacket);
+		discoverSocket.close();
 	}
 
 	// broadcast listener
@@ -52,6 +53,7 @@ public class Server {
 						byte[] listenerData = new byte[1024];
 						DatagramPacket listenerPacket = new DatagramPacket(listenerData, listenerData.length);
 						listenerSocket.receive(listenerPacket);
+						listenerSocket.close();
 						// show packet source
 						String source = new String(listenerPacket.getAddress() + ":" + listenerPacket.getPort());
 						System.out.println("Receive request from: " + source);
@@ -64,6 +66,7 @@ public class Server {
 						byte[] replyData = { 'R', 'E', 'P', 'L', 'Y' };
 						DatagramPacket replyPacket = new DatagramPacket(replyData, replyData.length,
 								listenerPacket.getAddress(), basePort);
+						System.out.println("Send reply to " + listenerPacket.getAddress());
 						replySocket.send(replyPacket);
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -85,7 +88,8 @@ public class Server {
 			System.out.print("Id: " + agent.showId() + ", Name: " + agent.showName());
 			System.out.println(", From: " + agent.showIP() + ":" + agent.showPort());
 			System.out.println("Task: " + agent.showTask());
-			agent.setTask(agent.showTask() + "HELLO"); //TODO: for different server
+			agent.setTask(agent.showTask() + "HELLO"); // TODO: for different
+														// server
 			System.out.println("New Task: " + agent.showTask());
 			// agentForward("192.168.1.66", "1234");
 			// TODO: add step

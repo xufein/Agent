@@ -44,6 +44,7 @@ public class Client {
 		Socket clientSocket = new Socket(serverIP, Integer.parseInt(serverPort)); // server
 		ObjectOutputStream sendAgent = new ObjectOutputStream(clientSocket.getOutputStream());
 		sendAgent.writeObject(agent);
+		System.out.println("Agent " + id + ":" + name + " send to: " + serverIP + ":" + Integer.parseInt(serverPort));
 		sendAgent.close();
 		clientSocket.close();
 	}

@@ -18,7 +18,7 @@ public class Server {
 	static String group = "239.0.0.1";
 	static int basePort = 1234;
 	static int serverPort = 4444;
-	static String localTask = "HELLO "; // agent carry this message when arrive
+	static String localTask = "Windows "; // agent carry this message when arrive
 
 	static Agent agent;
 	static Vector<String> vector = new Vector(); // save found server in vector
@@ -104,6 +104,8 @@ public class Server {
 		Socket clientSocket = new Socket(server, Integer.parseInt(port)); // destination
 		ObjectOutputStream sendAgent = new ObjectOutputStream(clientSocket.getOutputStream());
 		sendAgent.writeObject(agent);
+		System.out.println("Forward agent to: " + server + ":" + Integer.parseInt(port));
+		agent = null;
 	}
 
 	public static Vector getVector() {

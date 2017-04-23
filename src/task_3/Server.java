@@ -64,9 +64,9 @@ public class Server {
 						System.out.println(data);
 						if (data.equals("LEAVE  ")) {
 							vector.remove(source);
-							System.out.println(source + "leave group");
+							System.out.println(source + " leave group");
 						}
-						if (data.equals("REQUEST") || data.equals("REPLY  ")) {
+						if (data.equals("REQUEST")) {
 							if (vector.contains(source) != true)
 								vector.addElement(source);
 							// reply

@@ -63,7 +63,7 @@ public class Server {
 						String data = new String(listenerPacket.getData());
 						System.out.println(data);
 						if (data.equals("LEAVE  ")) {
-							vector.remove(source);
+							vector.remove(source); //TODO: can not remove?
 							System.out.println(source + " leave group");
 						}
 						if (data.equals("REQUEST")) {
@@ -76,6 +76,10 @@ public class Server {
 									listenerPacket.getAddress(), basePort);
 							System.out.println("Send reply to " + listenerPacket.getAddress() + ":" + basePort + "\n");
 							replySocket.send(replyPacket);
+						}
+						if (data.equals("REPLY  ")) {
+							if (vector.contains(source) != true)
+								vector.addElement(source);							
 						}
 					} catch (IOException e) {
 						e.printStackTrace();

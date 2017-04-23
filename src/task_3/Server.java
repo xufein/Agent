@@ -14,20 +14,22 @@ import java.util.Vector;
 
 public class Server {
 
-	static String localIP = "192.168.1.93"; // set local IP
+	static String localIP = "192.168.1.66"; // set local IP
 	static String group = "239.0.0.1";
 	static int basePort = 1234;
 	static int serverPort = 4444;
-	static String localTask = "Windows "; // agent carry this message when arrive
+	static String localTask = "Windows "; // agent carry this message when
+											// arrive
 
 	static Agent agent;
 	static Vector<String> vector = new Vector(); // save found server in vector
 	static Scanner scanner = new Scanner(System.in);
 
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
+		System.out.println("Server is running, type 'help' to get help.\n");
 		cmd();
 		listener();
-		discover();
+		// discover();
 		agentArrive();
 	}
 
@@ -51,30 +53,47 @@ public class Server {
 						// receive
 						MulticastSocket listenerSocket = new MulticastSocket(basePort);
 						listenerSocket.joinGroup(InetAddress.getByName(group));
-						byte[] listenerData = new byte[1024];
+						byte[] listenerData = new byte[7];
 						DatagramPacket listenerPacket = new DatagramPacket(listenerData, listenerData.length);
 						listenerSocket.receive(listenerPacket);
 						listenerSocket.close();
-						// show packet source
+						// show packet source and save in vector
 						String source = new String(listenerPacket.getAddress() + ":" + listenerPacket.getPort());
-						System.out.println("Receive request from: " + source);
-						// save to vector
-						if (vector.contains(source) != true)
-							vector.addElement(source);
-						// TODO; push vector to Client ...push(vector) {}
-						// reply
-						MulticastSocket replySocket = new MulticastSocket(serverPort);
-						byte[] replyData = { 'R', 'E', 'P', 'L', 'Y' };
-						DatagramPacket replyPacket = new DatagramPacket(replyData, replyData.length,
-								listenerPacket.getAddress(), basePort);
-						System.out.println("Send reply to " + listenerPacket.getAddress() + ":" + basePort + "\n");
-						replySocket.send(replyPacket);
+						System.out.println("Receive data from: " + source);
+						String data = new String(listenerPacket.getData());
+						System.out.println(data);
+						if (data.equals("LEAVE  ")) {
+							vector.remove(source);
+							System.out.println(source + "leave group");
+						}
+						if (data.equals("REQUEST") || data.equals("REPLY  ")) {
+							if (vector.contains(source) != true)
+								vector.addElement(source);
+							// reply
+							MulticastSocket replySocket = new MulticastSocket(serverPort);
+							byte[] replyData = { 'R', 'E', 'P', 'L', 'Y', ' ', ' ' };
+							DatagramPacket replyPacket = new DatagramPacket(replyData, replyData.length,
+									listenerPacket.getAddress(), basePort);
+							System.out.println("Send reply to " + listenerPacket.getAddress() + ":" + basePort + "\n");
+							replySocket.send(replyPacket);
+						}
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
 				}
 			}
 		}).start();
+	}
+
+	// leave group
+	public static void leave() throws IOException {
+		InetSocketAddress address = new InetSocketAddress(localIP, basePort);
+		MulticastSocket discoverSocket = new MulticastSocket(address);
+		byte[] discoverData = { 'L', 'E', 'A', 'V', 'E', ' ', ' ' };
+		DatagramPacket discoverPacket = new DatagramPacket(discoverData, discoverData.length,
+				InetAddress.getByName("255.255.255.255"), basePort);
+		discoverSocket.send(discoverPacket);
+		discoverSocket.close();
 	}
 
 	// server wait for agent arrive
@@ -94,7 +113,7 @@ public class Server {
 			agent.setVisited(localIP + ":" + serverPort);
 			// show task and set new task
 			System.out.println("Task: " + agent.showTask());
-			agent.setTask(agent.showTask() + localTask); // TODO: different
+			agent.setTask(agent.showTask() + localTask);
 			System.out.println("New Task: " + agent.showTask() + "\n");
 		}
 	}
@@ -105,11 +124,6 @@ public class Server {
 		ObjectOutputStream sendAgent = new ObjectOutputStream(clientSocket.getOutputStream());
 		sendAgent.writeObject(agent);
 		System.out.println("Forward agent to: " + server + ":" + Integer.parseInt(port));
-		agent = null;
-	}
-
-	public static Vector getVector() {
-		return vector;
 	}
 
 	public static void cmd() {
@@ -118,7 +132,7 @@ public class Server {
 				while (true) {
 					String command = scanner.nextLine();
 					switch (command) {
-					case "list":
+					case "help":
 						System.out.println("'discover' to boardcast.");
 						System.out.println("'vector' to show server.");
 						System.out.println("'forward' to forward agent.");
@@ -133,9 +147,8 @@ public class Server {
 							e1.printStackTrace();
 						}
 						break;
-					case "vector":
+					case "list":
 						System.out.println(vector);
-						// System.out.println(getVector());
 						break;
 					case "discover":
 						try {
@@ -143,6 +156,14 @@ public class Server {
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
+						break;
+					case "quit":
+						try {
+							leave();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						System.exit(0);
 						break;
 					}
 				}

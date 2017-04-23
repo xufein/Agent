@@ -13,17 +13,18 @@ public class Client {
 
 	// static String serverIP = "192.168.1.66";
 	static int serverPort = 4444;
-	static String homeIP = "192.168.1.93"; // set local IP
+	static String homeIP = "192.168.1.66"; // set local IP
 	static int homePort = 1234;
 
 	static Vector<String> vector = new Vector(); // save found server in vector
 	static Scanner scanner = new Scanner(System.in);
 
 	public static void main(String[] args) throws UnknownHostException, IOException {
+		System.out.println("Client is running, type 'help' to get help.");
 		cmd();
 		agentHome();
 		// agentSend();
-		agentSend("7", "Courier", "192.168.1.93", "4444"); // test
+		agentSend("7", "Courier", "192.168.1.66", "4444"); // test
 
 	}
 
@@ -37,10 +38,12 @@ public class Client {
 	// clientSocket.close();
 	// }
 
+	// create new agent and send
 	public static void agentSend(String id, String name, String serverIP, String serverPort)
 			throws UnknownHostException, IOException {
 		Agent agent = new AgentImp(Integer.parseInt(id), name, homeIP, homePort); // home
 		agent.setVisited(homeIP + ":" + homePort);
+		agent.setTask("Home ");
 		Socket clientSocket = new Socket(serverIP, Integer.parseInt(serverPort)); // server
 		ObjectOutputStream sendAgent = new ObjectOutputStream(clientSocket.getOutputStream());
 		sendAgent.writeObject(agent);
@@ -73,14 +76,13 @@ public class Client {
 		}).start();
 	}
 
-	// TODO: add function
 	public static void cmd() {
 		new Thread(new Runnable() {
 			public void run() {
 				while (true) {
 					String command = scanner.nextLine();
 					switch (command) {
-					case "list":
+					case "help":
 						System.out.println("'new' to send new agent.");
 						System.out.println("'discover' to boardcast.");
 						break;
@@ -92,16 +94,6 @@ public class Client {
 							agentSend(strArr[0], strArr[1], strArr[2], strArr[3]);
 						} catch (IOException e1) {
 							e1.printStackTrace();
-						}
-						break;
-					case "vector":
-						System.out.println(Server.getVector());
-						break;
-					case "discover":
-						try {
-							Server.discover();
-						} catch (IOException e) {
-							e.printStackTrace();
 						}
 						break;
 					}

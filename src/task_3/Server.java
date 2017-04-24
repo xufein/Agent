@@ -18,18 +18,17 @@ public class Server {
 	static String group = "239.0.0.1";
 	static int basePort = 1234;
 	static int serverPort = 4444;
-	static String localTask = "Windows "; // agent carry this message when
-											// arrive
+	static String localTask = "Windows "; // agent carry this message when arrive
 
 	static Agent agent;
-	static Vector<String> vector = new Vector(); // save found server in vector
+	static Vector<String> vector = new Vector<String>(); // save found server in vector
 	static Scanner scanner = new Scanner(System.in);
 
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		System.out.println("Server is running, type 'help' to get help.\n");
 		cmd();
 		listener();
-		// discover();
+		discover();
 		agentArrive();
 	}
 
@@ -58,12 +57,11 @@ public class Server {
 						listenerSocket.receive(listenerPacket);
 						listenerSocket.close();
 						// show packet source and save in vector
-						String source = new String(listenerPacket.getAddress() + ":" + listenerPacket.getPort());
-						System.out.println("Receive data from: " + source);
+						String source = listenerPacket.getAddress().toString();
 						String data = new String(listenerPacket.getData());
-						System.out.println(data);
+						System.out.println("Receive " + data + " from: " + source);
 						if (data.equals("LEAVE  ")) {
-							vector.remove(source); //TODO: can not remove?
+							vector.remove(source);
 							System.out.println(source + " leave group");
 						}
 						if (data.equals("REQUEST")) {
@@ -79,7 +77,7 @@ public class Server {
 						}
 						if (data.equals("REPLY  ")) {
 							if (vector.contains(source) != true)
-								vector.addElement(source);							
+								vector.addElement(source);
 						}
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -106,15 +104,12 @@ public class Server {
 		while (true) {
 			Socket agentSocket = serversocket.accept();
 			ObjectInputStream inputStream = new ObjectInputStream(agentSocket.getInputStream());
-			// Agent agent = (Agent) inputStream.readObject();
 			agent = (Agent) inputStream.readObject();
-			System.out.print("Receive Agent ");
-			System.out.print("Id: " + agent.showId() + ", Name: " + agent.showName());
+			System.out.print("Receive Agent Id: " + agent.showId() + ", Name: " + agent.showName());
 			System.out.println(", Home: " + agent.showIP() + ":" + agent.showPort());
-			// System.out.println(", From: " + agentSocket.getInetAddress());
 			// show visited and set new visited
-			System.out.println("Visited: " + agent.showVisited());
 			agent.setVisited(localIP + ":" + serverPort);
+			System.out.println("Visited: " + agent.showVisited());
 			// show task and set new task
 			System.out.println("Task: " + agent.showTask());
 			agent.setTask(agent.showTask() + localTask);
@@ -138,8 +133,9 @@ public class Server {
 					switch (command) {
 					case "help":
 						System.out.println("'discover' to boardcast.");
-						System.out.println("'vector' to show server.");
+						System.out.println("'list' to show server.");
 						System.out.println("'forward' to forward agent.");
+						System.out.println("'quit' to leave group.");
 						break;
 					case "forward":
 						System.out.println("Input 'destinationIP destinationPort'");

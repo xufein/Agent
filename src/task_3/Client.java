@@ -11,32 +11,19 @@ import java.util.Vector;
 
 public class Client {
 
-	// static String serverIP = "192.168.1.66";
 	static int serverPort = 4444;
 	static String homeIP = "192.168.1.66"; // set local IP
 	static int homePort = 1234;
 
-	static Vector<String> vector = new Vector(); // save found server in vector
 	static Scanner scanner = new Scanner(System.in);
 
 	public static void main(String[] args) throws UnknownHostException, IOException {
 		System.out.println("Client is running, type 'help' to get help.");
 		cmd();
 		agentHome();
-		// agentSend();
 		agentSend("7", "Courier", "192.168.1.66", "4444"); // test
 
 	}
-
-	// public static void agentSend() throws UnknownHostException, IOException {
-	// Agent agent = new AgentImp(007, "Courier", homeIP, homePort); // home
-	// Socket clientSocket = new Socket(serverIP, serverPort); // server
-	// ObjectOutputStream sendAgent = new
-	// ObjectOutputStream(clientSocket.getOutputStream());
-	// sendAgent.writeObject(agent);
-	// sendAgent.close();
-	// clientSocket.close();
-	// }
 
 	// create new agent and send
 	public static void agentSend(String id, String name, String serverIP, String serverPort)
@@ -52,6 +39,7 @@ public class Client {
 		clientSocket.close();
 	}
 
+	// agent listener and show content
 	public static void agentHome() {
 		new Thread(new Runnable() {
 			@Override

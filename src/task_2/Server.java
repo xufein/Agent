@@ -12,7 +12,7 @@ public class Server {
 		Socket serversocket = null;
 		ObjectInputStream inputStream = null;
 		ObjectOutputStream outputSteam = null;
-		ServerSocket server = new ServerSocket(4444);
+		ServerSocket server = new ServerSocket(4444); // server port
 
 		while (true) {
 			// receive
@@ -20,22 +20,21 @@ public class Server {
 			inputStream = new ObjectInputStream(serversocket.getInputStream());
 			Agent agent = (Agent) inputStream.readObject();
 			System.out.print("Id: " + agent.showId() + ", Name: " + agent.showName());
-			System.out.println(", From: " + agent.showIP());
-			// send back
+			System.out.println(", From: " + agent.showIP() + ":" + agent.showPort());
+			// clean
+			inputStream.close();
+			serversocket.close();
+
+			// update and send back
 			agent.setId(456);
 			agent.setName("Bob");
 			agent.setTask("HELLO WORLD");
-			outputSteam = new ObjectOutputStream(serversocket.getOutputStream());
+			Socket clientSocket = new Socket(agent.showIP(), agent.showPort());
+			outputSteam = new ObjectOutputStream(clientSocket.getOutputStream());
 			outputSteam.writeObject(agent);
 			// clean
-			inputStream.close();
 			outputSteam.close();
-			serversocket.close();
-
-//			Socket clientSocket = new Socket("localhost", 1234);
-//			outputSteam = new ObjectOutputStream(clientSocket.getOutputStream());
-//			outputSteam.writeObject(agent);
-
+			clientSocket.close();
 		}
 	}
 
